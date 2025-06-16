@@ -1,0 +1,38 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+
+    - name: 🐳 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: 📦 Build Docker containers using Compose
+      run: docker-compose -f docker-compose.yml build
+
+    - name: ▶️ Start Docker containers
+      run: docker-compose -f docker-compose.yml up -d
+
+    - name: ⏳ Wait for services to be ready
+      run: sleep 10
+
+    - name: 🧪 Run backend health check
+      run: |
+        echo "Checking if backend is up..."
+        curl --fail http://localhost:8000 || (echo "❌ Backend health check failed" && exit 1)
+
+    - name: 🧼 Tear down Docker containers
+      if: always()
+      run: docker-compose down
