@@ -1,16 +1,10 @@
-# backend/Dockerfile
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy backend app files
 COPY backend/ /app/
+COPY backend/requirements.txt .
 
-# Copy models from project root to container
-COPY models/ /models/
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install required packages
-RUN pip install --no-cache-dir fastapi uvicorn pandas scikit-learn joblib
-
-# Run the backend
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
