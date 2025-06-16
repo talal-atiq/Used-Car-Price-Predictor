@@ -1,13 +1,15 @@
 # frontend/Dockerfile
+
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy frontend code
+# Copy frontend code and requirements
 COPY frontend/ /app/
+COPY frontend/requirements.txt .
 
-# Install dependencies
-RUN pip install --no-cache-dir streamlit pandas scikit-learn joblib plotly
+# Install dependencies from requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the frontend
+# Run the Streamlit frontend
 CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
